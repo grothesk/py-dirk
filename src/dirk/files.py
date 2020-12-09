@@ -6,12 +6,18 @@ import click
 from .settings import EXPORT_KUBECONFIG, ENVRC_FILENAME, KUBECONFIG_FILENAME
 
 
-class EnvrcFile:
+class BaseFile:
+    filename = "filename"
+
     def __init__(self, directory):
-        self.path = os.path.join(directory, ENVRC_FILENAME)
+        self.path = os.path.join(directory, self.filename)
 
     def exists(self):
         return os.path.isfile(self.path)
+
+
+class EnvrcFile(BaseFile):
+    filename = ENVRC_FILENAME
 
     def create(self):
         with open(self.path, 'w') as file:
@@ -22,19 +28,19 @@ class EnvrcFile:
             file.write('\n{export}\n'.format(export=EXPORT_KUBECONFIG))
 
     def __replace_export(self):
-        modified = False
+        contains_export = False
         with fileinput.input(files=(self.path,), inplace=True) as file:
             for line in file:
                 if line.strip().startswith('export KUBECONFIG='):
-                    print(EXPORT_KUBECONFIG, end='')
-                    modified = True
+                    print('{export}\n'.format(export=EXPORT_KUBECONFIG), end='')
+                    contains_export = True
                 else:
                     print(line, end='')
-        return modified
+        return contains_export
 
     def replace_or_append_export(self):
-        modified = self.__replace_export()
-        if not modified:
+        contains_export = self.__replace_export()
+        if not contains_export:
             self.__append_export()
 
     def allow(self):
@@ -54,11 +60,7 @@ class EnvrcFile:
 
 
 class KubeconfigFile:
-    def __init__(self, directory):
-        self.path = os.path.join(directory, KUBECONFIG_FILENAME)
-
-    def exists(self):
-        return os.path.isfile(self.path)
+    filename = KUBECONFIG_FILENAME
 
     def create(self):
         open(self.path, 'a').close()

@@ -1,3 +1,4 @@
 click
 ruamel.yaml
 pytest
+tox
