@@ -26,35 +26,4 @@ Leaving the project folder will lead to the kubeconfig file to be unloaded.
 
 # Example of use
 
-1. Install dirk and minikube.
-2. Run `example/build_example.sh`.
-3. Change to `example/foo`, run 
-
-   ```bash
-   minikube start -p foo 
-   ```
-   and get the node of the minikube cluster
-   
-   ```bash
-   kubectl get nodes 
-   ```   
-4. Change to `example/bar`, run 
-
-   ```bash
-   minikube start -p bar
-   ```
-   
-   and get the node of the minikube cluster
-   
-   ```bash
-   kubectl get nodes 
-   ```   
-   
-5. Change to `example/foo` again and get the node
-
-   ```bash
-   minikube start -p foo
-   ```
-   
-   As you can see, changing the directory changes the kubeconfig file which is used by kubectl.
- 
+How to use dirk is shown in [https://github.com/deepshore/how-to-use-dirk](https://github.com/deepshore/how-to-use-dirk).
