@@ -1,5 +1,4 @@
 import os
-import fileinput
 import shutil
 import click
 
@@ -72,8 +71,11 @@ class KubeconfigFile(BaseFile):
     def create(self):
         open(self.path, 'a').close()
 
-    def replace(self, configfile):
+    def replace_by_configfile(self, configfile):
         shutil.copyfile(configfile, self.path)
+
+    def replace_by_emptyfile(self):
+        open(self.path, 'w').close()
 
     def set_mode(self):
         os.chmod(self.path, 0o600)
@@ -81,17 +83,24 @@ class KubeconfigFile(BaseFile):
     def process(self, configfile, mode):
         if self.exists():
             click.echo('dirk: {path} does already exist'.format(path=self.path))
-            if configfile:
-                if mode == 'skip':
+            if mode == 'skip':
+                if configfile:
                     click.echo('dirk: skip writing {file} to existing kubeconfig.'.format(file=configfile))
-                if mode == 'replace':
+                else:
+                    click.echo('dirk: skip writing empty file to existing kubeconfig.'.format(file=configfile))
+            if mode == 'replace':
+                if configfile:
                     click.echo('dirk: replace existing kubeconfig by {file}.'.format(file=configfile))
-                    self.replace(configfile)
+                    self.replace_by_configfile(configfile)
+                else:
+                    click.echo('dirk: replace existing kubeconfig by empty file.'.format(file=configfile))
+                    self.replace_by_emptyfile()
+                self.set_mode()
         else:
             click.echo('dirk: {path} does not exist.'.format(path=self.path))
             if configfile:
                 click.echo('dirk: write {file} to kubeconfig.'.format(file=configfile))
-                self.replace(configfile)
+                self.replace_by_configfile(configfile)
             else:
                 click.echo('dirk: create empty {path}.'.format(path=self.path))
                 self.create()
