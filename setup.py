@@ -7,7 +7,7 @@ long_description = (here / 'README.md').read_text(encoding='utf-8')
 
 setup(
     name='py-dirk',
-    version='0.0.3',
+    version='0.0.5',
     description='dirk exports KUBECONFIG via direnv',
     long_description=long_description,
     long_description_content_type='text/markdown',
