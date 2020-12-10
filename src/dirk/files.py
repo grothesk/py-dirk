@@ -23,24 +23,31 @@ class EnvrcFile(BaseFile):
         with open(self.path, 'w') as file:
             file.write('{export}\n'.format(export=EXPORT_KUBECONFIG))
 
+    def __contains_export(self):
+        with open(self.path, 'r') as f:
+            lines = f.readlines()
+        for line in lines:
+            if line.strip().startswith('export KUBECONFIG='):
+                return True
+        return False
+
     def __append_export(self):
         with open(self.path, 'a') as file:
             file.write('\n{export}\n'.format(export=EXPORT_KUBECONFIG))
 
     def __replace_export(self):
-        contains_export = False
-        with fileinput.input(files=(self.path,), inplace=True) as file:
-            for line in file:
-                if line.strip().startswith('export KUBECONFIG='):
-                    print('{export}\n'.format(export=EXPORT_KUBECONFIG), end='')
-                    contains_export = True
-                else:
-                    print(line, end='')
-        return contains_export
+        with open(self.path, 'r') as f:
+            lines = f.readlines()
+        for i, line in enumerate(lines):
+            if line.strip().startswith('export KUBECONFIG='):
+                lines[i] = '{export}\n'.format(export=EXPORT_KUBECONFIG)
+        with open(self.path, 'w') as f:
+            f.writelines(lines)
 
     def replace_or_append_export(self):
-        contains_export = self.__replace_export()
-        if not contains_export:
+        if self.__contains_export():
+            self.__replace_export()
+        else:
             self.__append_export()
 
     def allow(self):
