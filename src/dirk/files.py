@@ -66,7 +66,7 @@ class EnvrcFile(BaseFile):
         self.allow()
 
 
-class KubeconfigFile:
+class KubeconfigFile(BaseFile):
     filename = KUBECONFIG_FILENAME
 
     def create(self):
